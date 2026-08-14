@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cégstatisztikák | Trustindex Teszt{% endblock %}
+
+{% block body %}
+    <section class="page-header">
+        <div class="container">
+            <p class="eyebrow">Összesített eredmények</p>
+            <h1>Cégek értékelése</h1>
+            <p class="lead">Az átlagok a beérkezett véleményekből készülnek, és értékelés szerint csökkenő sorrendben láthatók.</p>
+        </div>
+    </section>
+
+    <section class="container content-section">
+        <div class="section-heading section-heading-right">
+            <form class="search" method="get" action="{{ path('app_company_index') }}" role="search">
+                <label class="sr-only" for="company-search">Keresés cég neve alapján</label>
+                <input id="company-search" type="search" name="q" value="{{ query }}" placeholder="Cég neve…">
+                <button type="submit">Keresés</button>
+                {% if query %}<a class="clear-search" href="{{ path('app_company_index') }}">Törlés</a>{% endif %}
+            </form>
+        </div>
+
+        {% if companies is empty %}
+            <div class="empty-state">
+                <h2>Nincs megjeleníthető cég</h2>
+                <p>{{ query ? 'Próbálj másik keresőkifejezést.' : 'A statisztikák az első vélemény után jelennek meg.' }}</p>
+            </div>
+        {% else %}
+            <div class="company-list">
+                {% for company in companies %}
+                    <article class="company-card">
+                        <div class="company-summary">
+                            <div>
+                                <h2>{{ company.companyName }}</h2>
+                                <span class="review-count">{{ company.reviewCount }} vélemény</span>
+                            </div>
+                            <div class="average">
+                                <strong>{{ company.averageRating|number_format(2, ',', ' ') }}</strong>
+                                {% include '_stars.html.twig' with {rating: company.averageRating} only %}
+                            </div>
+                        </div>
+                        <div class="distribution" aria-label="Értékelések megoszlása">
+                            {% for rating in 5..1 %}
+                                <div class="distribution-row">
+                                    <span>{{ rating }} ★</span>
+                                    <div class="bar-track"><span class="bar-fill" style="width: {{ company.percentageFor(rating) }}%"></span></div>
+                                    <span>{{ company.ratingCounts[rating] }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}
