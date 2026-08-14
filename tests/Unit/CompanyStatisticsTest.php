@@ -13,6 +13,7 @@ final class CompanyStatisticsTest extends TestCase
     {
         $statistics = CompanyStatistics::fromDatabaseRow([
             'companyName' => 'Acme Kft.',
+            'companyKey' => 'acme kft.',
             'reviewCount' => '4',
             'averageRating' => '4.25',
             'fiveStarCount' => '2',
@@ -23,6 +24,7 @@ final class CompanyStatisticsTest extends TestCase
         ]);
 
         self::assertSame('Acme Kft.', $statistics->companyName);
+        self::assertSame('acme kft.', $statistics->companyKey);
         self::assertSame(4, $statistics->reviewCount);
         self::assertSame(4.25, $statistics->averageRating);
         self::assertSame([5 => 2, 4 => 1, 3 => 1, 2 => 0, 1 => 0], $statistics->ratingCounts);

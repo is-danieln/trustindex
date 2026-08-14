@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Domain\CompanyNameNormalizer;
 use App\Entity\Review;
 use App\ValueObject\CompanyStatistics;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -30,8 +31,8 @@ final class ReviewRepository extends ServiceEntityRepository
 
         if (null !== $companyQuery && '' !== trim($companyQuery)) {
             $queryBuilder
-                ->andWhere('LOWER(review.companyName) LIKE LOWER(:companyQuery)')
-                ->setParameter('companyQuery', '%'.trim($companyQuery).'%');
+                ->andWhere("review.companyNameKey LIKE :companyQuery ESCAPE '!'")
+                ->setParameter('companyQuery', CompanyNameNormalizer::searchPattern($companyQuery));
         }
 
         return $queryBuilder->getQuery()->getResult();
@@ -43,7 +44,8 @@ final class ReviewRepository extends ServiceEntityRepository
     public function findCompanyStatistics(?string $companyQuery = null): array
     {
         $queryBuilder = $this->createQueryBuilder('review')
-            ->select('review.companyName AS companyName')
+            ->select('MIN(review.companyName) AS companyName')
+            ->addSelect('review.companyNameKey AS companyKey')
             ->addSelect('COUNT(review.id) AS reviewCount')
             ->addSelect('AVG(review.rating) AS averageRating')
             ->addSelect('SUM(CASE WHEN review.rating = 5 THEN 1 ELSE 0 END) AS fiveStarCount')
@@ -51,14 +53,14 @@ final class ReviewRepository extends ServiceEntityRepository
             ->addSelect('SUM(CASE WHEN review.rating = 3 THEN 1 ELSE 0 END) AS threeStarCount')
             ->addSelect('SUM(CASE WHEN review.rating = 2 THEN 1 ELSE 0 END) AS twoStarCount')
             ->addSelect('SUM(CASE WHEN review.rating = 1 THEN 1 ELSE 0 END) AS oneStarCount')
-            ->groupBy('review.companyName')
+            ->groupBy('review.companyNameKey')
             ->orderBy('averageRating', 'DESC')
-            ->addOrderBy('review.companyName', 'ASC');
+            ->addOrderBy('companyName', 'ASC');
 
         if (null !== $companyQuery && '' !== trim($companyQuery)) {
             $queryBuilder
-                ->andWhere('LOWER(review.companyName) LIKE LOWER(:companyQuery)')
-                ->setParameter('companyQuery', '%'.trim($companyQuery).'%');
+                ->andWhere("review.companyNameKey LIKE :companyQuery ESCAPE '!'")
+                ->setParameter('companyQuery', CompanyNameNormalizer::searchPattern($companyQuery));
         }
 
         /** @var list<array<string, int|float|string>> $rows */

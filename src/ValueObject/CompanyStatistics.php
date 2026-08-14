@@ -11,6 +11,7 @@ final readonly class CompanyStatistics
      */
     public function __construct(
         public string $companyName,
+        public string $companyKey,
         public int $reviewCount,
         public float $averageRating,
         public array $ratingCounts,
@@ -27,6 +28,7 @@ final readonly class CompanyStatistics
     {
         return new self(
             companyName: (string) $row['companyName'],
+            companyKey: (string) $row['companyKey'],
             reviewCount: (int) $row['reviewCount'],
             averageRating: round((float) $row['averageRating'], 2),
             ratingCounts: [

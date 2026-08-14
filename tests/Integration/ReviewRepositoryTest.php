@@ -43,6 +43,21 @@ final class ReviewRepositoryTest extends KernelTestCase
         self::assertSame(50.0, $statistics[1]->percentageFor(5));
     }
 
+    public function testCompanyNameVariantsAreAggregatedTogether(): void
+    {
+        $this->persistReview('  Acme   Kft. ', 5);
+        $this->persistReview('ACME KFT.', 3);
+        $this->persistReview('Másik Cég', 4);
+        $this->entityManager->flush();
+
+        $statistics = $this->repository->findCompanyStatistics();
+
+        self::assertCount(2, $statistics);
+        self::assertSame('acme kft.', $statistics[0]->companyKey);
+        self::assertSame(2, $statistics[0]->reviewCount);
+        self::assertSame(4.0, $statistics[0]->averageRating);
+    }
+
     private function persistReview(string $companyName, int $rating): void
     {
         $review = (new Review())
