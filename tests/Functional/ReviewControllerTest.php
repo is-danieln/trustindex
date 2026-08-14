@@ -40,8 +40,10 @@ final class ReviewControllerTest extends WebTestCase
         $review = self::getContainer()
             ->get(EntityManagerInterface::class)
             ->getRepository(Review::class)
-            ->findOneBy(['companyName' => 'Mintacég Kft.']);
+            ->findOneBy([]);
         self::assertNotNull($review);
+        self::assertSame('Mintacég Kft.', $review->getCompanyName());
+        self::assertSame('mintacég kft.', $review->getCompany()?->getNormalizedName());
         self::assertSame(5, $review->getRating());
     }
 

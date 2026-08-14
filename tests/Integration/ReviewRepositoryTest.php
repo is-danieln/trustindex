@@ -6,6 +6,7 @@ namespace App\Tests\Integration;
 
 use App\Entity\Review;
 use App\Repository\ReviewRepository;
+use App\Service\CompanyResolver;
 use App\Tests\DatabaseTestTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -16,6 +17,7 @@ final class ReviewRepositoryTest extends KernelTestCase
 
     private EntityManagerInterface $entityManager;
     private ReviewRepository $repository;
+    private CompanyResolver $companyResolver;
 
     protected function setUp(): void
     {
@@ -24,6 +26,7 @@ final class ReviewRepositoryTest extends KernelTestCase
         $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
         $this->createDatabaseSchema($this->entityManager);
         $this->repository = self::getContainer()->get(ReviewRepository::class);
+        $this->companyResolver = self::getContainer()->get(CompanyResolver::class);
     }
 
     public function testCompanyStatisticsAreAveragedAndSortedDescending(): void
@@ -61,7 +64,7 @@ final class ReviewRepositoryTest extends KernelTestCase
     private function persistReview(string $companyName, int $rating): void
     {
         $review = (new Review())
-            ->setCompanyName($companyName)
+            ->setCompany($this->companyResolver->resolve($companyName))
             ->setRating($rating)
             ->setReviewText('Korrekt és részletes ügyfélélmény.')
             ->setAuthorEmail('teszt@example.com');

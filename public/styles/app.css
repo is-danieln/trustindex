@@ -101,6 +101,7 @@ h1 { max-width: 760px; margin-bottom: 18px; font-size: clamp(2.25rem, 6vw, 4.4re
 .company-card { display: grid; grid-template-columns: minmax(280px, .8fr) 1.2fr; gap: 50px; padding: 28px 32px; }
 .company-summary { display: flex; justify-content: space-between; gap: 20px; }
 .company-summary h2 { margin-bottom: 5px; }
+.company-summary h2 a { text-decoration: none; }
 .review-count { color: var(--muted); font-size: .9rem; }
 .average { text-align: right; }
 .average strong { display: block; font-size: 2rem; line-height: 1.1; }
@@ -108,6 +109,16 @@ h1 { max-width: 760px; margin-bottom: 18px; font-size: clamp(2.25rem, 6vw, 4.4re
 .distribution-row { display: grid; grid-template-columns: 36px 1fr 26px; align-items: center; gap: 10px; color: var(--muted); font-size: .78rem; }
 .bar-track { height: 7px; overflow: hidden; background: #edf1ee; border-radius: 99px; }
 .bar-fill { display: block; height: 100%; background: var(--accent); border-radius: inherit; }
+.company-link { align-self: end; }
+.company-detail-header .back-link { margin-bottom: 28px; }
+.company-detail-summary { display: flex; align-items: end; justify-content: space-between; gap: 40px; }
+.company-detail-summary h1 { margin-bottom: 8px; }
+.company-score { min-width: 150px; text-align: right; }
+.company-score strong { display: block; font-size: 3rem; line-height: 1; }
+.company-detail-grid { display: grid; grid-template-columns: 330px 1fr; align-items: start; gap: 36px; }
+.company-distribution-card { display: block; position: sticky; top: 96px; padding: 28px; }
+.company-distribution-card h2 { margin-bottom: 22px; font-size: 1.25rem; }
+.company-review-grid { grid-template-columns: 1fr; }
 
 .site-footer { padding: 28px 0; color: var(--muted); border-top: 1px solid var(--line); font-size: .86rem; }
 
@@ -116,11 +127,14 @@ h1 { max-width: 760px; margin-bottom: 18px; font-size: clamp(2.25rem, 6vw, 4.4re
     .nav-wrap { min-height: 64px; }
     nav > a:not(.button) { display: none; }
     .hero { padding: 55px 0; }
-    .hero-grid, .company-card { grid-template-columns: 1fr; gap: 28px; }
+    .hero-grid, .company-card, .company-detail-grid { grid-template-columns: 1fr; gap: 28px; }
     .review-grid { grid-template-columns: 1fr; }
     .section-heading { align-items: stretch; flex-direction: column; }
     .search { flex-wrap: wrap; }
     .search input { width: 100%; flex: 1 0 100%; }
     .company-summary { align-items: start; }
+    .company-detail-summary { align-items: start; flex-direction: column; gap: 24px; }
+    .company-score { text-align: left; }
+    .company-distribution-card { position: static; }
     .footer-wrap { align-items: start; flex-direction: column; gap: 5px; }
 }

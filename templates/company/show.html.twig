@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ company.companyName }} | Trustindex Teszt{% endblock %}
+
+{% block body %}
+    <section class="page-header company-detail-header">
+        <div class="container">
+            <a class="back-link" href="{{ path('app_company_index') }}">← Vissza a cégekhez</a>
+            <p class="eyebrow">Cégértékelés</p>
+            <div class="company-detail-summary">
+                <div>
+                    <h1>{{ company.companyName }}</h1>
+                    <p class="lead">{{ company.reviewCount }} beérkezett vélemény alapján</p>
+                </div>
+                <div class="company-score">
+                    <strong>{{ company.averageRating|number_format(2, ',', ' ') }}</strong>
+                    {% include '_stars.html.twig' with {rating: company.averageRating} only %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container content-section company-detail-grid">
+        <aside class="company-card company-distribution-card">
+            <h2>Értékelések megoszlása</h2>
+            <div class="distribution">
+                {% for rating in 5..1 %}
+                    <div class="distribution-row">
+                        <span>{{ rating }} ★</span>
+                        <div class="bar-track"><span class="bar-fill" style="width: {{ company.percentageFor(rating) }}%"></span></div>
+                        <span>{{ company.ratingCounts[rating] }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </aside>
+
+        <div>
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Legfrissebb bejegyzések</p>
+                    <h2>Vélemények</h2>
+                </div>
+                <a class="button" href="{{ path('app_review_new') }}">Véleményt írok</a>
+            </div>
+            <div class="review-grid company-review-grid">
+                {% for review in reviews %}
+                    {% include 'review/_card.html.twig' with {review} only %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

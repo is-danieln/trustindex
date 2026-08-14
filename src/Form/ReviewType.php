@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 final class ReviewType extends AbstractType
 {
@@ -21,6 +23,11 @@ final class ReviewType extends AbstractType
         $builder
             ->add('companyName', TextType::class, [
                 'label' => 'Cég neve',
+                'mapped' => false,
+                'constraints' => [
+                    new NotBlank(message: 'Add meg a cég nevét.'),
+                    new Length(max: 255, maxMessage: 'A cégnév legfeljebb {{ limit }} karakter lehet.'),
+                ],
                 'attr' => ['autocomplete' => 'organization', 'placeholder' => 'Például: Acme Kft.'],
             ])
             ->add('rating', ChoiceType::class, [

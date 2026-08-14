@@ -10,6 +10,7 @@ final readonly class CompanyStatistics
      * @param array<int, int> $ratingCounts Number of reviews keyed by rating (1-5)
      */
     public function __construct(
+        public int $companyId,
         public string $companyName,
         public string $companyKey,
         public int $reviewCount,
@@ -27,6 +28,7 @@ final readonly class CompanyStatistics
     public static function fromDatabaseRow(array $row): self
     {
         return new self(
+            companyId: (int) $row['companyId'],
             companyName: (string) $row['companyName'],
             companyKey: (string) $row['companyKey'],
             reviewCount: (int) $row['reviewCount'],

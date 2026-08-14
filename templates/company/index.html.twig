@@ -32,7 +32,7 @@
                     <article class="company-card">
                         <div class="company-summary">
                             <div>
-                                <h2>{{ company.companyName }}</h2>
+                                <h2><a href="{{ path('app_company_show', {id: company.companyId}) }}">{{ company.companyName }}</a></h2>
                                 <span class="review-count">{{ company.reviewCount }} vélemény</span>
                             </div>
                             <div class="average">
@@ -49,6 +49,7 @@
                                 </div>
                             {% endfor %}
                         </div>
+                        <a class="text-link company-link" href="{{ path('app_company_show', {id: company.companyId}) }}">Cég részletei <span aria-hidden="true">→</span></a>
                     </article>
                 {% endfor %}
             </div>

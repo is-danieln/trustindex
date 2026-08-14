@@ -40,16 +40,7 @@
         {% else %}
             <div class="review-grid">
                 {% for review in reviews %}
-                    <article class="review-card">
-                        <div class="review-meta">
-                            {% include '_stars.html.twig' with {rating: review.rating} only %}
-                            <time datetime="{{ review.createdAt|date('c') }}">{{ review.createdAt|date('Y. m. d.') }}</time>
-                        </div>
-                        <h3><a href="{{ path('app_review_show', {id: review.id}) }}">{{ review.companyName }}</a></h3>
-                        {% set excerpt = review.reviewText|length > 180 ? review.reviewText|slice(0, 180) ~ '…' : review.reviewText %}
-                        <p>{{ excerpt }}</p>
-                        <a class="text-link" href="{{ path('app_review_show', {id: review.id}) }}">Teljes vélemény <span aria-hidden="true">→</span></a>
-                    </article>
+                    {% include 'review/_card.html.twig' with {review} only %}
                 {% endfor %}
             </div>
         {% endif %}

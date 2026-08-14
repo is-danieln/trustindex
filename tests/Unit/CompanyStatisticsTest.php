@@ -12,6 +12,7 @@ final class CompanyStatisticsTest extends TestCase
     public function testItNormalizesDatabaseAggregatesAndCalculatesDistribution(): void
     {
         $statistics = CompanyStatistics::fromDatabaseRow([
+            'companyId' => '42',
             'companyName' => 'Acme Kft.',
             'companyKey' => 'acme kft.',
             'reviewCount' => '4',
@@ -23,6 +24,7 @@ final class CompanyStatisticsTest extends TestCase
             'oneStarCount' => '0',
         ]);
 
+        self::assertSame(42, $statistics->companyId);
         self::assertSame('Acme Kft.', $statistics->companyName);
         self::assertSame('acme kft.', $statistics->companyKey);
         self::assertSame(4, $statistics->reviewCount);

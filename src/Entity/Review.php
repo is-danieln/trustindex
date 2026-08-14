@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Domain\CompanyNameNormalizer;
 use App\Repository\ReviewRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,7 +11,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[ORM\Index(name: 'idx_review_company_name_key', columns: ['company_name_key'])]
 class Review
 {
     #[ORM\Id]
@@ -20,13 +18,9 @@ class Review
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Add meg a cég nevét.')]
-    #[Assert\Length(max: 255, maxMessage: 'A cégnév legfeljebb {{ limit }} karakter lehet.')]
-    private string $companyName = '';
-
-    #[ORM\Column(length: 255, options: ['default' => ''])]
-    private string $companyNameKey = '';
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Company $company = null;
 
     #[ORM\Column]
     #[Assert\NotNull(message: 'Válassz értékelést.')]
@@ -60,22 +54,21 @@ class Review
         return $this->id;
     }
 
-    public function getCompanyName(): string
+    public function getCompany(): ?Company
     {
-        return $this->companyName;
+        return $this->company;
     }
 
-    public function setCompanyName(?string $companyName): self
+    public function setCompany(Company $company): self
     {
-        $this->companyName = CompanyNameNormalizer::displayName($companyName ?? '');
-        $this->companyNameKey = CompanyNameNormalizer::key($this->companyName);
+        $this->company = $company;
 
         return $this;
     }
 
-    public function getCompanyNameKey(): string
+    public function getCompanyName(): string
     {
-        return $this->companyNameKey;
+        return $this->company?->getName() ?? '';
     }
 
     public function getRating(): ?int
