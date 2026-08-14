@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vélemények | Trustindex Teszt{% endblock %}
+
+{% block body %}
+    <section class="hero">
+        <div class="container hero-grid">
+            <div>
+                <p class="eyebrow">Közösségi tapasztalatok</p>
+                <h1>Dönts mások valódi véleményei alapján.</h1>
+                <p class="lead">Keress céget, olvasd el a tapasztalatokat, vagy oszd meg a sajátodat néhány perc alatt.</p>
+            </div>
+            <div class="hero-card">
+                <strong>{{ reviews|length }}</strong>
+                <span>{{ query ? 'találat erre: „' ~ query ~ '”' : 'megjelenített vélemény' }}</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="container content-section">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Legfrissebb bejegyzések</p>
+                <h2>Vélemények</h2>
+            </div>
+            <form class="search" method="get" action="{{ path('app_review_index') }}" role="search">
+                <label class="sr-only" for="review-search">Keresés cég neve alapján</label>
+                <input id="review-search" type="search" name="q" value="{{ query }}" placeholder="Cég neve…">
+                <button type="submit">Keresés</button>
+                {% if query %}<a class="clear-search" href="{{ path('app_review_index') }}">Törlés</a>{% endif %}
+            </form>
+        </div>
+
+        {% if reviews is empty %}
+            <div class="empty-state">
+                <h3>{{ query ? 'Nincs ilyen találat' : 'Még nincs vélemény' }}</h3>
+                <p>{{ query ? 'Próbálj másik keresőkifejezést.' : 'Légy te az első, aki megosztja a tapasztalatát.' }}</p>
+                <a class="button" href="{{ query ? path('app_review_index') : path('app_review_new') }}">{{ query ? 'Összes vélemény' : 'Véleményt írok' }}</a>
+            </div>
+        {% else %}
+            <div class="review-grid">
+                {% for review in reviews %}
+                    <article class="review-card">
+                        <div class="review-meta">
+                            {% include '_stars.html.twig' with {rating: review.rating} only %}
+                            <time datetime="{{ review.createdAt|date('c') }}">{{ review.createdAt|date('Y. m. d.') }}</time>
+                        </div>
+                        <h3><a href="{{ path('app_review_show', {id: review.id}) }}">{{ review.companyName }}</a></h3>
+                        {% set excerpt = review.reviewText|length > 180 ? review.reviewText|slice(0, 180) ~ '…' : review.reviewText %}
+                        <p>{{ excerpt }}</p>
+                        <a class="text-link" href="{{ path('app_review_show', {id: review.id}) }}">Teljes vélemény <span aria-hidden="true">→</span></a>
+                    </article>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

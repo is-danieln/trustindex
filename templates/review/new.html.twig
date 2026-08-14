@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Új vélemény | Trustindex Teszt{% endblock %}
+
+{% block body %}
+    <section class="container narrow content-section">
+        <a class="back-link" href="{{ path('app_review_index') }}">← Vissza a véleményekhez</a>
+        <div class="form-card">
+            <p class="eyebrow">Oszd meg a tapasztalatodat</p>
+            <h1>Írj véleményt</h1>
+            <p class="form-intro">A véleményed nyilvánosan megjelenik. Az e-mail-címedet csak a beküldés azonosításához tároljuk.</p>
+
+            {{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
+                {{ form_row(form.companyName) }}
+                {{ form_row(form.rating) }}
+                {{ form_row(form.reviewText) }}
+                {{ form_row(form.authorEmail) }}
+                {{ form_row(form.submit) }}
+            {{ form_end(form) }}
+        </div>
+    </section>
+{% endblock %}

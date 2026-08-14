@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ review.companyName }} vélemény | Trustindex Teszt{% endblock %}
+
+{% block body %}
+    <section class="container narrow content-section">
+        <a class="back-link" href="{{ path('app_review_index') }}">← Vissza a véleményekhez</a>
+        <article class="detail-card">
+            <div class="review-meta">
+                {% include '_stars.html.twig' with {rating: review.rating} only %}
+                <time datetime="{{ review.createdAt|date('c') }}">{{ review.createdAt|date('Y. m. d. H:i') }}</time>
+            </div>
+            <p class="eyebrow">Vélemény erről a cégről</p>
+            <h1>{{ review.companyName }}</h1>
+            <div class="review-body">{{ review.reviewText|nl2br }}</div>
+            <div class="privacy-note">A szerző e-mail-címe adatvédelmi okból nem nyilvános.</div>
+        </article>
+    </section>
+{% endblock %}

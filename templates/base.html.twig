@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="hu">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Független céges vélemények egy helyen.">
+        <title>{% block title %}Trustindex Teszt{% endblock %}</title>
+        <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+    </head>
+    <body>
+        <header class="site-header">
+            <div class="container nav-wrap">
+                <a class="brand" href="{{ path('app_review_index') }}" aria-label="Trustindex Teszt főoldal">
+                    <span class="brand-mark" aria-hidden="true">T</span>
+                    <span>Trustindex Teszt</span>
+                </a>
+                <nav aria-label="Fő navigáció">
+                    <a href="{{ path('app_review_index') }}"{% if app.current_route == 'app_review_index' %} aria-current="page"{% endif %}>Vélemények</a>
+                    <a href="{{ path('app_company_index') }}"{% if app.current_route == 'app_company_index' %} aria-current="page"{% endif %}>Cégek</a>
+                    <a class="button button-small" href="{{ path('app_review_new') }}">Véleményt írok</a>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            {% for message in app.flashes('success') %}
+                <div class="container flash" role="status">{{ message }}</div>
+            {% endfor %}
+
+            {% block body %}{% endblock %}
+        </main>
+
+        <footer class="site-footer">
+            <div class="container footer-wrap">
+                <span>Trustindex Teszt</span>
+            </div>
+        </footer>
+    </body>
+</html>
