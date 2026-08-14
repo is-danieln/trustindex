@@ -20,9 +20,11 @@ final class ReviewController extends AbstractController
     public function index(Request $request, ReviewRepository $reviewRepository): Response
     {
         $query = trim((string) $request->query->get('q', ''));
+        $reviewPage = $reviewRepository->paginateLatest($query, $request->query->getInt('page', 1));
 
         return $this->render('review/index.html.twig', [
-            'reviews' => $reviewRepository->findLatest($query),
+            'reviews' => $reviewPage->items,
+            'reviewPage' => $reviewPage,
             'query' => $query,
         ]);
     }

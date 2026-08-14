@@ -1,4 +1,4 @@
-{% set rounded_rating = rating|round(0, 'floor') %}
+{% set rounded_rating = rating|round %}
 <span class="stars" role="img" aria-label="{{ rating|number_format(1, ',', ' ') }} pont az 5-ből">
     {% for star in 1..5 %}<span class="{{ star <= rounded_rating ? 'star-filled' : 'star-empty' }}" aria-hidden="true">★</span>{% endfor %}
 </span>

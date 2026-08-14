@@ -8,6 +8,7 @@ use App\Domain\CompanyNameNormalizer;
 use App\Entity\Company;
 use App\Entity\Review;
 use App\ValueObject\CompanyStatistics;
+use App\ValueObject\ReviewPage;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -31,14 +32,32 @@ final class ReviewRepository extends ServiceEntityRepository
             ->orderBy('review.createdAt', 'DESC')
             ->addOrderBy('review.id', 'DESC');
 
-        if (null !== $companyQuery && '' !== trim($companyQuery)) {
-            $queryBuilder
-                ->innerJoin('review.company', 'company')
-                ->andWhere("company.normalizedName LIKE :companyQuery ESCAPE '!'")
-                ->setParameter('companyQuery', CompanyNameNormalizer::searchPattern($companyQuery));
-        }
+        $this->applyCompanySearch($queryBuilder, $companyQuery);
 
         return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function paginateLatest(?string $companyQuery, int $page, int $perPage = 10): ReviewPage
+    {
+        $page = max(1, $page);
+
+        $itemsQueryBuilder = $this->createQueryBuilder('review')
+            ->orderBy('review.createdAt', 'DESC')
+            ->addOrderBy('review.id', 'DESC')
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage);
+        $this->applyCompanySearch($itemsQueryBuilder, $companyQuery);
+
+        $countQueryBuilder = $this->createQueryBuilder('review')
+            ->select('COUNT(review.id)');
+        $this->applyCompanySearch($countQueryBuilder, $companyQuery);
+
+        return new ReviewPage(
+            items: $itemsQueryBuilder->getQuery()->getResult(),
+            currentPage: $page,
+            perPage: $perPage,
+            totalItems: (int) $countQueryBuilder->getQuery()->getSingleScalarResult(),
+        );
     }
 
     /**
@@ -105,5 +124,17 @@ final class ReviewRepository extends ServiceEntityRepository
             ->groupBy('company.id')
             ->addGroupBy('company.name')
             ->addGroupBy('company.normalizedName');
+    }
+
+    private function applyCompanySearch(QueryBuilder $queryBuilder, ?string $companyQuery): void
+    {
+        if (null === $companyQuery || '' === trim($companyQuery)) {
+            return;
+        }
+
+        $queryBuilder
+            ->innerJoin('review.company', 'company')
+            ->andWhere("company.normalizedName LIKE :companyQuery ESCAPE '!'")
+            ->setParameter('companyQuery', CompanyNameNormalizer::searchPattern($companyQuery));
     }
 }

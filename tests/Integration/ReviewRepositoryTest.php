@@ -61,6 +61,32 @@ final class ReviewRepositoryTest extends KernelTestCase
         self::assertSame(4.0, $statistics[0]->averageRating);
     }
 
+    public function testLatestReviewsCanBePaginated(): void
+    {
+        foreach (range(1, 12) as $ratingIndex) {
+            $this->persistReview('Lapozható Kft.', ($ratingIndex % 5) + 1);
+        }
+        $this->entityManager->flush();
+
+        $page = $this->repository->paginateLatest('lapozható', 2, 10);
+
+        self::assertSame(12, $page->totalItems);
+        self::assertCount(2, $page->items);
+        self::assertSame(2, $page->currentPage);
+    }
+
+    public function testSearchTreatsLikeWildcardsAsLiteralCharacters(): void
+    {
+        $this->persistReview('100% Valódi Kft.', 5);
+        $this->persistReview('1000 Valódi Kft.', 4);
+        $this->entityManager->flush();
+
+        $reviews = $this->repository->findLatest('100%');
+
+        self::assertCount(1, $reviews);
+        self::assertSame('100% Valódi Kft.', $reviews[0]->getCompanyName());
+    }
+
     private function persistReview(string $companyName, int $rating): void
     {
         $review = (new Review())
