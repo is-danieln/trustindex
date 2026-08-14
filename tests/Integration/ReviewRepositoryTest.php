@@ -1,0 +1,56 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Integration;
+
+use App\Entity\Review;
+use App\Repository\ReviewRepository;
+use App\Tests\DatabaseTestTrait;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+
+final class ReviewRepositoryTest extends KernelTestCase
+{
+    use DatabaseTestTrait;
+
+    private EntityManagerInterface $entityManager;
+    private ReviewRepository $repository;
+
+    protected function setUp(): void
+    {
+        self::bootKernel();
+
+        $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $this->createDatabaseSchema($this->entityManager);
+        $this->repository = self::getContainer()->get(ReviewRepository::class);
+    }
+
+    public function testCompanyStatisticsAreAveragedAndSortedDescending(): void
+    {
+        $this->persistReview('Alfa Kft.', 3);
+        $this->persistReview('Alfa Kft.', 5);
+        $this->persistReview('Béta Zrt.', 5);
+        $this->persistReview('Gamma Bt.', 2);
+        $this->entityManager->flush();
+
+        $statistics = $this->repository->findCompanyStatistics();
+
+        self::assertSame(['Béta Zrt.', 'Alfa Kft.', 'Gamma Bt.'], array_column($statistics, 'companyName'));
+        self::assertSame(5.0, $statistics[0]->averageRating);
+        self::assertSame(4.0, $statistics[1]->averageRating);
+        self::assertSame(2, $statistics[1]->reviewCount);
+        self::assertSame(50.0, $statistics[1]->percentageFor(5));
+    }
+
+    private function persistReview(string $companyName, int $rating): void
+    {
+        $review = (new Review())
+            ->setCompanyName($companyName)
+            ->setRating($rating)
+            ->setReviewText('Korrekt és részletes ügyfélélmény.')
+            ->setAuthorEmail('teszt@example.com');
+
+        $this->entityManager->persist($review);
+    }
+}
