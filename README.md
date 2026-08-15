@@ -6,6 +6,7 @@ Egyszerű Symfony alkalmazás céges vélemények beküldésére és böngészé
 
 Igyekeztem a megoldást a feladat méretéhez igazítani: legyen jól szétválasztott és tesztelhető, de ne kerüljön bele olyan absztrakció, amelyre ebben a méretben még nincs szükség. Nem került a projektbe oda nem illő funkció csak azért, hogy többnek tűnjön.
 Amikre figyeltem:
+- .env alapértelmezetten része a reponak, nem tartalmaz semmi titkosat, ezért nem raktam gitignore-ba.
 - Controller réteg vékony maradjon és csak a HTTP-kérést kezelik, meghívják a szükséges repository- vagy Doctrine-műveletet, majd átadják az eredményt a viewnak. Az üzleti és lekérdezési logika nem került controller actionökbe, ezért azok rövidek, könnyen követhetők és külön-külön tesztelhetők maradtak.
 - Külön entityk, mindenhez hamár ORM van. Ez később megkönnyíti a fejlesztést, mert csak ki kell bővíteni.
 - Keresésnél fontos, hogy kisbetűs, levágott és egységes whitespace-t használó normalizált nevet készítsem valami. Ez lett a `CompanyResolver`. A normalizált név egyedi indexet kapott, a keresésben pedig a `%` és `_` karakterek nem válhatnak véletlen SQL wildcarddá.
